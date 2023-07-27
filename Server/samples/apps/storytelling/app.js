@@ -63,63 +63,67 @@ class TextureGeneration extends ApplicationController {
             var peerUUID = identifier;
             if (response.startsWith(">")) {
                 response = response.slice(1); // Slice off the leading '>' character
-				 console.log(response)
-                let commandMatch = this.commandRegex.exec(response);
-                if (commandMatch != null) {
-                    if (commandMatch[1] && commandMatch[2]) {
+                response = response.replace(/[\r\n]/gm, '')
+                if (response === "") return;
+				console.log(response)
+                //let commandMatch = this.commandRegex.exec(response);
+                //if (commandMatch != null) {
+                //if (commandMatch[1] && commandMatch[2]) {
+                /*console.log(
+                    "\x1b[32mRecognized command\x1b[0m: " +
+                        response
+                            .replace(commandMatch[1], "\x1b[32m" + commandMatch[1] + "\x1b[0m")
+                            .replace(commandMatch[2], "\x1b[32m" + commandMatch[2] + "\x1b[0m")
+                );*/
+                //let textureTarget = commandMatch[1];
+                let textureTarget = "storytellingboard"
+
+                // Check if texture target is "this" or "that" or "all of these" or "all of those"
+                /*if (textureTarget.toLowerCase() == "this" || textureTarget.toLowerCase() == "that") {
+                    // If so, we need to retrieve the last selected object by the peer in lastPeerSelection, if it was within the last 10 seconds
+                    const time = new Date().getTime();
+                    if (lastPeerSelection[peerUUID] && time - lastPeerSelection[peerUUID].time < 10000) {
+                        textureTarget = lastPeerSelection[peerUUID].message;
+                        console.log("Changing ray-based texture target to: " + textureTarget);
+                    } else {
                         console.log(
-                            "\x1b[32mRecognized command\x1b[0m: " +
-                                response
-                                    .replace(commandMatch[1], "\x1b[32m" + commandMatch[1] + "\x1b[0m")
-                                    .replace(commandMatch[2], "\x1b[32m" + commandMatch[2] + "\x1b[0m")
-                        );
-                        let textureTarget = commandMatch[1];
-
-                        // Check if texture target is "this" or "that" or "all of these" or "all of those"
-                        if (textureTarget.toLowerCase() == "this" || textureTarget.toLowerCase() == "that") {
-                            // If so, we need to retrieve the last selected object by the peer in lastPeerSelection, if it was within the last 10 seconds
-                            const time = new Date().getTime();
-                            if (lastPeerSelection[peerUUID] && time - lastPeerSelection[peerUUID].time < 10000) {
-                                textureTarget = lastPeerSelection[peerUUID].message;
-                                console.log("Changing ray-based texture target to: " + textureTarget);
-                            } else {
-                                console.log(
-                                    "\x1b[33m" +
-                                        "No object selected by peer " +
-                                        peerUUID +
-                                        " in the last 10 seconds, so cannot change texture target" +
-                                        "\x1b[0m"
-                                );
-                            }
-                        }
-
-                        this.scene.send(new NetworkId(97), {
-                            type: "GenerationStarted",
-                            target: textureTarget,
-                            data: "",
-                            peer: peerUUID,
-                        });
-
-                        // If command contains the word texture or pattern, add a suffix to the command to make it more specific
-                        if (
-                            commandMatch[2].toLowerCase().includes("texture") ||
-                            commandMatch[2].toLowerCase().includes("pattern")
-                        ) {
-                            commandMatch[2] += ", seamless, flat texture, video game texture";
-                        }
-                        // Create target file name based on peer uuid, target object, and current time
-                        const time = new Date().getTime();
-                        const targetFileName = peerUUID + "_" + textureTarget + "_" + time;
-
-                        this.components.textureGeneration.sendToChildProcess(
-                            "default",
-                            JSON.stringify({
-                                prompt: commandMatch[2],
-                                output_file: targetFileName,
-                            }) + "\n"
+                            "\x1b[33m" +
+                                "No object selected by peer " +
+                                peerUUID +
+                                " in the last 10 seconds, so cannot change texture target" +
+                                "\x1b[0m"
                         );
                     }
-                }
+                }*/
+
+                this.scene.send(new NetworkId(97), {
+                    type: "GenerationStarted",
+                    target: textureTarget,
+                    data: "",
+                    peer: peerUUID,
+                });
+
+                // If command contains the word texture or pattern, add a suffix to the command to make it more specific
+                /*if (
+                    commandMatch[2].toLowerCase().includes("texture") ||
+                    commandMatch[2].toLowerCase().includes("pattern")
+                ) {
+                    commandMatch[2] += ", seamless, flat texture, video game texture";
+                }*/
+                // Create target file name based on peer uuid, target object, and current time
+                const time = new Date().getTime();
+                const targetFileName = peerUUID + "_" + textureTarget + "_" + time;
+
+                this.components.textureGeneration.sendToChildProcess(
+                    "default",
+                    JSON.stringify({
+                        //prompt: commandMatch[2],
+                        prompt: response + ", seamless, flat texture, video game texture",
+                        output_file: targetFileName,
+                    }) + "\n"
+                );
+                //    }
+                //}
             }
         });
 

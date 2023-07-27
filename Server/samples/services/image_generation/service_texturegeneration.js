@@ -21,7 +21,7 @@ class ImageGenerationService extends ServiceController {
                         "-u",
                         "../../services/image_generation/text_2_image.py",
                         "--output_folder",
-                        "../../apps/storytelling/data",
+                        "../../apps/texture_generation/data",
                         "--prompt_postfix",
                         ", 4k"
                     ]);
