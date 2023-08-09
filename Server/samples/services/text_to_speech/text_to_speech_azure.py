@@ -1,6 +1,8 @@
 import os
 import sys
 import azure.cognitiveservices.speech as speechsdk
+from pydub import AudioSegment
+import numpy as np
 
 # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
 speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_KEY'), region=os.environ.get('SPEECH_REGION'))
@@ -13,6 +15,23 @@ speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, au
 def transcribeSpeech(text):
     speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
     sys.stdout.buffer.write(speech_synthesis_result.audio_data)
+    
+    raw_audio = speech_synthesis_result.audio_data
+    filename = os.path.join('data',"test.wav")
+    if(os.path.exists(filename) == False):
+        output = AudioSegment.empty()
+    else:
+        output = AudioSegment.from_file(filename) 
+    
+    segment = AudioSegment(
+            data=raw_audio,
+            sample_width=2,  # 16-bit
+            frame_rate=16000,
+            channels=1
+            )
+            
+    output += segment
+    output.export(filename, format="wav")
 
     if speech_synthesis_result.reason == speechsdk.ResultReason.Canceled:
         cancellation_details = speech_synthesis_result.cancellation_details

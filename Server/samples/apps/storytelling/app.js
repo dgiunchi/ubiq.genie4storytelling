@@ -2,6 +2,7 @@ const { NetworkId } = require("ubiq/ubiq/messaging");
 const { MessageReader, ApplicationController } = require("ubiq-genie-components");
 const { TextToSpeechService, TextGenerationService,ImageGenerationService, SpeechToTextService, FileServer } = require("ubiq-genie-services");
 const nconf = require("nconf");
+const fs = require('fs');
 
 class TextureGeneration extends ApplicationController {
     constructor(configFile = "config.json") {
@@ -122,12 +123,17 @@ class TextureGeneration extends ApplicationController {
             // Split the data into a peer_uuid (36 bytes) and audio data (rest)
             const peerUUID = data.message.subarray(0, 36).toString();
             const audio_data = data.message.subarray(36, data.message.length);
-
-            // Send the audio data to the transcription service
-            this.components.transcriptionService.sendToChildProcess(
-                peerUUID,
-                JSON.stringify(audio_data.toJSON()) + "\n"
-            );
+            
+            if(data.message.length>0)
+            {
+                //console.log("from audio receiver to TTS: " + peerUUID + " " + data.message.length);
+                // Send the audio data to the transcription service
+                this.components.transcriptionService.sendToChildProcess(
+                    peerUUID,
+                    JSON.stringify(audio_data.toJSON()) + "\n"
+                );
+            }
+            
         });
         
         // Step 2: When we receive a transcription from the transcription service, send it to the image generation service
@@ -144,6 +150,7 @@ class TextureGeneration extends ApplicationController {
                 //response = ">create a story more than 300 words and less than 350 words long about a cat in a chocolate castle. Remember to put a conclusion and don't be too long, and put a @END@. For each sentence of the story, include, in square brackets. This description must be unique and written as if it were to be fed to a diffusion model for image generation. Do not put proper names inside the square brackets.";
                 response = ">create a story more than 300 words and less than 350 words long about a cat in a chocolate castle. Remember to put a conclusion and don't be too long, and put a @END@. It is mandatory that for each sentence of the story, include, in square brackets, a different description of a picture representing that sentence. This description must be written  as if it were to be fed to a diffusion model for image generation. Do not put proper names inside the square brackets.";
                 this.iteration_count += 1;
+
             } else response = "";
             
             // Remove all newlines from the response
@@ -167,14 +174,19 @@ class TextureGeneration extends ApplicationController {
                 // of the images. And we can pass them to a loop for the generation. Simultaneusly in Unity there is a way to handle them and present according
                 // to the text arrived @@@@
                 //======================================== TEXT GENERATED
-                console.log(data.toString());
-
+                
                 //@@ HIJACKED
                 console.log("=================HIJACKED")
                 //data = "In a faraway land, there stood a mystical Chocolate Castle, a delectable marvel that beckoned explorers with its sweet allure. [A picture of a grand castle made entirely of mouthwatering chocolate, adorned with colorful candy accents]Inside the castle, an adventurous little cat named Whiskers found herself lost in this sugary wonderland after curiously following a tantalizing aroma. [A picture of Whiskers, a cute calico cat, walking through a corridor of chocolate walls, sniffing the air with wonder]As Whiskers roamed the halls, she discovered rooms filled with candy fountains, marshmallow pillows, and licorice vines hanging from the ceiling. [A picture showcasing the cat's amazement as she witnesses a room with chocolate fountains, marshmallows scattered like cushions, and licorice vines hanging down]But Whiskers' eyes widened in awe when she stumbled upon the Chocolate River, flowing smoothly with melted goodness. [A picture of Whiskers sitting by the Chocolate River, her eyes reflecting the mesmerizing sight]With a cautious step, Whiskers dipped her paw into the river, savoring the velvety touch of liquid chocolate on her furry paw. [A picture of Whiskers dipping her paw into the river, her expression showing delight]Just then, the sweet aroma led Whiskers to the Chocolate Garden, a wondrous place where the flowers were made of gummy bears and the trees were lollipop forests. [A picture showcasing Whiskers in the Chocolate Garden, surrounded by gummy bear flowers and lollipop trees]In this paradise, Whiskers encountered a friendly group of sugar fairies, who invited her to a delightful tea party filled with cocoa treats and candy pastries. [A picture of Whiskers sitting at a tiny table, surrounded by sugar fairies, all enjoying the enchanting tea party]As the day waned, Whiskers realized it was time to leave this magical land, but she knew she would forever carry the memories of her adventure in the Chocolate Castle. [A picture of Whiskers bidding farewell to the sugar fairies, her heart filled with fond memories]With a contented heart and a belly full of sweet delights, Whiskers ventured back home, carrying the magic of the Chocolate Castle within her. [A picture of Whiskers walking away from the castle, a sense of happiness and wonder evident on her face]From that day on, Whiskers became the keeper of the secret Chocolate Castle, sharing her tale with her feline friends, igniting their curiosity, and reminding them that adventure can always be found in the most unexpected places. [A picture of Whiskers surrounded by other cats, narrating her story with animated gestures]And so, the legend of the cat in the Chocolate Castle lived on, forever etched in the hearts and imaginations of those who heard her enchanting tale. [A picture of Whiskers' legend being passed down through generations, with cats huddled together, listening in awe]" ;
-                data = "In a faraway land, there stood a mystical Chocolate Castle, a delectable marvel that beckoned explorers with its sweet allure. [A picture of a grand castle made entirely of mouthwatering chocolate, adorned with colorful candy accents]Inside the castle, an adventurous little cat named Whiskers found herself lost in this sugary wonderland after curiously following a tantalizing aroma. [A picture of Whiskers, a cute calico cat, walking through a corridor of chocolate walls, sniffing the air with wonder]As Whiskers roamed the halls, she discovered rooms filled with candy fountains, marshmallow pillows, and licorice vines hanging from the ceiling. [A picture showcasing the cat's amazement as she witnesses a room with chocolate fountains, marshmallows scattered like cushions, and licorice vines hanging down]" ;
+                response = "In a faraway land, there stood a mystical Chocolate Castle, a delectable marvel that beckoned explorers with its sweet allure. [A picture of a grand castle made entirely of mouthwatering chocolate, adorned with colorful candy accents]Inside the castle, an adventurous little cat named Whiskers found herself lost in this sugary wonderland after curiously following a tantalizing aroma. [A picture of Whiskers, a cute calico cat, walking through a corridor of chocolate walls, sniffing the air with wonder]As Whiskers roamed the halls, she discovered rooms filled with candy fountains, marshmallow pillows, and licorice vines hanging from the ceiling. [A picture showcasing the cat's amazement as she witnesses a room with chocolate fountains, marshmallows scattered like cushions, and licorice vines hanging down]" ;
                 
-                let data_clean = data.toString().replace(/\r?\n/g, '');
+                //save locally
+                fs.writeFile('data/storyscript.txt', response, (err) => {
+                    if (err) throw err;
+                    console.log('Text saved!');
+                    });
+
+                let data_clean = response.replace(/\r?\n/g, '');
 
                 const pattern = /(.*?)\[(.*?)\]/g;
                 let result = [];

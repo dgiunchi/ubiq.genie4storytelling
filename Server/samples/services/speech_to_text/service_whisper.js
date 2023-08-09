@@ -23,7 +23,7 @@ class SpeechToTextService extends ServiceController {
                     "--phrase_timeout",
                     "30",
                     "--output_folder",
-                    "../../apps/vocalmessage/data",
+                    "../../apps/storytelling/data",
                     "--output_name",
                     "file.wav"
                 ]);
