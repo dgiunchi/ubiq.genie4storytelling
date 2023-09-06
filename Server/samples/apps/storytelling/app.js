@@ -1,6 +1,6 @@
 const { NetworkId } = require("ubiq/ubiq/messaging");
 const { MessageReader, ApplicationController } = require("ubiq-genie-components");
-const { TextToSpeechService, TextGenerationService,ImageGenerationService, SpeechToTextService, FileServer } = require("ubiq-genie-services");
+const { TextToSpeechService, TextGenerationService,ImageGenerationService, SpeechToTextService, FileServer } = require("ubiq-genie-services"); //AudioGenerationService
 const nconf = require("nconf");
 const fs = require('fs');
 
@@ -24,6 +24,9 @@ class TextureGeneration extends ApplicationController {
 
         // An ImageGenerationService to generate images based on text
         this.components.textureGeneration = new ImageGenerationService(this.scene, nconf.get());
+        
+        // An ImageGenerationService to generate images based on text
+        //this.components.audioGeneration = new AudioGenerationService(this.scene, nconf.get());
 
         // A MessageReader to receive selection data from peers based on fixed network ID
         // Selection data is stored in a dictionary, where the key is the peer UUID and the value is target object
@@ -44,6 +47,8 @@ class TextureGeneration extends ApplicationController {
         this.StoryAndImages = []; // sequence of text and images of the story
         this.totalItems = 0
         this.currentItem = 0;
+        
+        this.storyprompt = "";
     }
 
 
@@ -106,7 +111,7 @@ class TextureGeneration extends ApplicationController {
 
         const time = new Date().getTime();
         const targetFileName = peerUUID + "_" + textureTarget + "_" + time;
-
+        console.log(targetFileName + ' generation');
         this.components.textureGeneration.sendToChildProcess(
             "default",
             JSON.stringify({
@@ -143,12 +148,14 @@ class TextureGeneration extends ApplicationController {
             const peer = this.roomClient.peers.get(identifier);
             const peerName = peer.properties.get("ubiq.samples.social.name");
 
-            //@@ HIJACKED
+            //@@ to test HIJACK here
             var response = data.toString();
-            if (response.startsWith(">") && this.iteration_count < this.allowed_iterations){
-                console.log("=================HIJACKED")
+            var minimumForInterpreting = 5;
+            if (response.startsWith(">") && response.length > minimumForInterpreting && this.iteration_count < this.allowed_iterations){
+                //this.storyprompt = response
+                this.storyprompt = response.slice(1);
                 //response = ">create a story more than 300 words and less than 350 words long about a cat in a chocolate castle. Remember to put a conclusion and don't be too long, and put a @END@. For each sentence of the story, include, in square brackets. This description must be unique and written as if it were to be fed to a diffusion model for image generation. Do not put proper names inside the square brackets.";
-                response = ">create a story more than 300 words and less than 350 words long about a cat in a chocolate castle. Remember to put a conclusion and don't be too long, and put a @END@. It is mandatory that for each sentence of the story, include, in square brackets, a different description of a picture representing that sentence. This description must be written  as if it were to be fed to a diffusion model for image generation. Do not put proper names inside the square brackets.";
+                response = ">create a story more than 300 words and less than 350 words long about " + this.storyprompt + ". Remember to put a conclusion and don't be too long. For each sentence of the story, include always, in square brackets, a different description of a picture representing that sentence. Such description must be written  as if it were to be fed to a diffusion model for image generation. Do not put proper names inside the square brackets.";
                 this.iteration_count += 1;
 
             } else response = "";
@@ -169,16 +176,18 @@ class TextureGeneration extends ApplicationController {
         this.components.textGenerationService.on("response", (data, identifier) => {
             var response = data.toString();
             if (response.startsWith(">")) {
+                response = response.slice(1); // Slice off the leading '>' character
                 console.log("Received text generation response from child process " + identifier);
                 // here some logic to grab images to do from the text, for example if instructed well the service can put in square brackets the description
                 // of the images. And we can pass them to a loop for the generation. Simultaneusly in Unity there is a way to handle them and present according
                 // to the text arrived @@@@
                 //======================================== TEXT GENERATED
                 
-                //@@ HIJACKED
-                console.log("=================HIJACKED")
-                //data = "In a faraway land, there stood a mystical Chocolate Castle, a delectable marvel that beckoned explorers with its sweet allure. [A picture of a grand castle made entirely of mouthwatering chocolate, adorned with colorful candy accents]Inside the castle, an adventurous little cat named Whiskers found herself lost in this sugary wonderland after curiously following a tantalizing aroma. [A picture of Whiskers, a cute calico cat, walking through a corridor of chocolate walls, sniffing the air with wonder]As Whiskers roamed the halls, she discovered rooms filled with candy fountains, marshmallow pillows, and licorice vines hanging from the ceiling. [A picture showcasing the cat's amazement as she witnesses a room with chocolate fountains, marshmallows scattered like cushions, and licorice vines hanging down]But Whiskers' eyes widened in awe when she stumbled upon the Chocolate River, flowing smoothly with melted goodness. [A picture of Whiskers sitting by the Chocolate River, her eyes reflecting the mesmerizing sight]With a cautious step, Whiskers dipped her paw into the river, savoring the velvety touch of liquid chocolate on her furry paw. [A picture of Whiskers dipping her paw into the river, her expression showing delight]Just then, the sweet aroma led Whiskers to the Chocolate Garden, a wondrous place where the flowers were made of gummy bears and the trees were lollipop forests. [A picture showcasing Whiskers in the Chocolate Garden, surrounded by gummy bear flowers and lollipop trees]In this paradise, Whiskers encountered a friendly group of sugar fairies, who invited her to a delightful tea party filled with cocoa treats and candy pastries. [A picture of Whiskers sitting at a tiny table, surrounded by sugar fairies, all enjoying the enchanting tea party]As the day waned, Whiskers realized it was time to leave this magical land, but she knew she would forever carry the memories of her adventure in the Chocolate Castle. [A picture of Whiskers bidding farewell to the sugar fairies, her heart filled with fond memories]With a contented heart and a belly full of sweet delights, Whiskers ventured back home, carrying the magic of the Chocolate Castle within her. [A picture of Whiskers walking away from the castle, a sense of happiness and wonder evident on her face]From that day on, Whiskers became the keeper of the secret Chocolate Castle, sharing her tale with her feline friends, igniting their curiosity, and reminding them that adventure can always be found in the most unexpected places. [A picture of Whiskers surrounded by other cats, narrating her story with animated gestures]And so, the legend of the cat in the Chocolate Castle lived on, forever etched in the hearts and imaginations of those who heard her enchanting tale. [A picture of Whiskers' legend being passed down through generations, with cats huddled together, listening in awe]" ;
-                response = "In a faraway land, there stood a mystical Chocolate Castle, a delectable marvel that beckoned explorers with its sweet allure. [A picture of a grand castle made entirely of mouthwatering chocolate, adorned with colorful candy accents]Inside the castle, an adventurous little cat named Whiskers found herself lost in this sugary wonderland after curiously following a tantalizing aroma. [A picture of Whiskers, a cute calico cat, walking through a corridor of chocolate walls, sniffing the air with wonder]As Whiskers roamed the halls, she discovered rooms filled with candy fountains, marshmallow pillows, and licorice vines hanging from the ceiling. [A picture showcasing the cat's amazement as she witnesses a room with chocolate fountains, marshmallows scattered like cushions, and licorice vines hanging down]" ;
+                //@@ to test HIJACK here
+                // long test
+                // response = "In a faraway land, there stood a mystical Chocolate Castle, a delectable marvel that beckoned explorers with its sweet allure. [A picture of a grand castle made entirely of mouthwatering chocolate, adorned with colorful candy accents]Inside the castle, an adventurous little cat named Whiskers found herself lost in this sugary wonderland after curiously following a tantalizing aroma. [A picture of Whiskers, a cute calico cat, walking through a corridor of chocolate walls, sniffing the air with wonder]As Whiskers roamed the halls, she discovered rooms filled with candy fountains, marshmallow pillows, and licorice vines hanging from the ceiling. [A picture showcasing the cat's amazement as she witnesses a room with chocolate fountains, marshmallows scattered like cushions, and licorice vines hanging down]But Whiskers' eyes widened in awe when she stumbled upon the Chocolate River, flowing smoothly with melted goodness. [A picture of Whiskers sitting by the Chocolate River, her eyes reflecting the mesmerizing sight]With a cautious step, Whiskers dipped her paw into the river, savoring the velvety touch of liquid chocolate on her furry paw. [A picture of Whiskers dipping her paw into the river, her expression showing delight]Just then, the sweet aroma led Whiskers to the Chocolate Garden, a wondrous place where the flowers were made of gummy bears and the trees were lollipop forests. [A picture showcasing Whiskers in the Chocolate Garden, surrounded by gummy bear flowers and lollipop trees]In this paradise, Whiskers encountered a friendly group of sugar fairies, who invited her to a delightful tea party filled with cocoa treats and candy pastries. [A picture of Whiskers sitting at a tiny table, surrounded by sugar fairies, all enjoying the enchanting tea party]As the day waned, Whiskers realized it was time to leave this magical land, but she knew she would forever carry the memories of her adventure in the Chocolate Castle. [A picture of Whiskers bidding farewell to the sugar fairies, her heart filled with fond memories]With a contented heart and a belly full of sweet delights, Whiskers ventured back home, carrying the magic of the Chocolate Castle within her. [A picture of Whiskers walking away from the castle, a sense of happiness and wonder evident on her face]From that day on, Whiskers became the keeper of the secret Chocolate Castle, sharing her tale with her feline friends, igniting their curiosity, and reminding them that adventure can always be found in the most unexpected places. [A picture of Whiskers surrounded by other cats, narrating her story with animated gestures]And so, the legend of the cat in the Chocolate Castle lived on, forever etched in the hearts and imaginations of those who heard her enchanting tale. [A picture of Whiskers' legend being passed down through generations, with cats huddled together, listening in awe]" ;
+                // short test
+                //response = "In a faraway land, there stood a mystical Chocolate Castle, a delectable marvel that beckoned explorers with its sweet allure. [A picture of a grand castle made entirely of mouthwatering chocolate, adorned with colorful candy accents]Inside the castle, an adventurous little cat named Whiskers found herself lost in this sugary wonderland after curiously following a tantalizing aroma. [A picture of Whiskers, a cute calico cat, walking through a corridor of chocolate walls, sniffing the air with wonder]As Whiskers roamed the halls, she discovered rooms filled with candy fountains, marshmallow pillows, and licorice vines hanging from the ceiling. [A picture showcasing the cat's amazement as she witnesses a room with chocolate fountains, marshmallows scattered like cushions, and licorice vines hanging down]" ;
                 
                 //save locally
                 fs.writeFile('data/storyscript.txt', response, (err) => {
@@ -199,6 +208,15 @@ class TextureGeneration extends ApplicationController {
                 this.StoryAndImages = result.slice();
                 this.totalItems = this.StoryAndImages.length;
                 this.textureGen(identifier);
+
+                //audio generation
+                /*this.components.audioGeneration.sendToChildProcess(
+                    "default",
+                    JSON.stringify({
+                        prompt: "ambient music based on a story of " + this.storyprompt,
+                        output_file: "BackgroundAudio",
+                    }) + "\n"
+                );*/
                 
                 //========================================= END IMAGE GEN
                 //all the images sent, the last is not yet generated... need a check to understand when it is finished, store a len
@@ -210,8 +228,34 @@ class TextureGeneration extends ApplicationController {
                 //this.components.textToSpeechService.sendToChildProcess("default", response + "\n");
             }
         });
+        
+        // Step 4: When we receive a response from the audio generation service, send a message to clients with the audio file name.
+        /*this.components.audioGeneration.on("response", (data, identifier) => {
+            data = data.toString();
+            if (data.includes(".wav")) {
+                //const [peerUUID, target, time] = data.split("_");
+                //this.scene.send(new NetworkId(nconf.get("outputNetworkId")), {
+                //    type: "TextureGeneration",
+                //    target: target,
+                //    data: data,
+                //    peer: peerUUID,
+                //});
+                console.log('Background audio saved!');
+                // send to Unity all  the list and start the TTS
+                this.scene.send(new NetworkId(nconf.get("outputNetworkId")), {
+                    type: "BackgroundAudio",
+                    target: "default",
+                    data:  JSON.stringify(data),
+                    peer: identifier,
+                });
+                
+                this.textureGen(identifier);
+                
+            }
 
-        // Step 4: When we receive a response from the image generation service, send a message to clients with the image file name.
+        });*/
+
+        // Step 5: When we receive a response from the image generation service, send a message to clients with the image file name.
         this.components.textureGeneration.on("response", (data, identifier) => {
             data = data.toString();
             if (data.includes(".png")) {
@@ -226,10 +270,13 @@ class TextureGeneration extends ApplicationController {
                 this.StoryAndImages[this.currentItem][1] =  data.replace(/\r?\n/g, '');
                 this.currentItem+=1;
                 
-                this.textureGen(identifier); //ready for the next image
+                this.textureGen(identifier);
+                
             }
 
         });
+        
+ 
 
         this.components.textureGeneration.on("error", (err) => {
             console.log(err.toString());

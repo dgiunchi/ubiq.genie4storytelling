@@ -54,7 +54,7 @@ if __name__ == "__main__":
     #model = GPT4All("ggml-gpt4all-j-v1.3-groovy.bin")
     #model = GPT4All('orca-mini-3b.ggmlv3.q4_0.bin') #bad
     #model = GPT4All('ggml-mpt-7b-chat') # quite good at the moment for question\answer
-    model = GPT4All('ggml-model-gpt4all-falcon-q4_0') # quite good at the moment for question\answer
+    model = GPT4All('ggml-model-gpt4all-falcon-q4_0') # good in describing
     #model = GPT4All('wizardlm-13b-v1.1-superhot-8k.ggmlv3.q4_0') #not working under nodejs
     
 

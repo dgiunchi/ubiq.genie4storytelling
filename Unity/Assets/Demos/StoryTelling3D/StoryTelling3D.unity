@@ -13924,7 +13924,7 @@ MonoBehaviour:
   audioSource: {fileID: 268042658}
   assistantController: {fileID: 114615208}
   volume: {fileID: 268042663}
-  serverBaseUrl: http://192.168.0.38:3000/
+  serverBaseUrl: http://192.168.0.50:3000/
   tempTexture: {fileID: 2800000, guid: c73a18936f7eb4c4ca00f1a8772082f9, type: 3}
   materialKeywords:
   - material: {fileID: 2100000, guid: 0f4343f6c1b40b3458a3cd7d811d3e44, type: 2}
