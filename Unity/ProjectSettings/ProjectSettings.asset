@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: ubiq-genie
+  productName: ubiq-genie_session3
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -136,8 +136,10 @@ PlayerSettings:
     Others: 1
   bundleVersion: 0.1
   preloadedAssets:
-  - {fileID: 11400000, guid: 4cfe853ddce0b4405bebcf6b37c36435, type: 2}
-  - {fileID: -3108337537909497964, guid: e84ea8eec73b0456bb6cf3148f0777d8, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 24a3a85085b0f4146b13bc10c67f6cf0, type: 2}
+  - {fileID: 7554952254489257644, guid: 20b58030da5dfff41939903049307662, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -157,7 +159,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Android: com.DefaultCompany.ubiqgenie
+    Android: com.DefaultCompany.ubiqgenie_session3
   buildNumber:
     Standalone: 0
     iPhone: 0
