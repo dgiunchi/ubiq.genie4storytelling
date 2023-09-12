@@ -132,11 +132,19 @@ public class StoryTellerManager : MonoBehaviour
                 LoadPNGFromURL(tuple.Item2, AddTextureToList);
             }
 
-        } else if (data.ToString().Contains("DisplayImage"))
+        } 
+        else if (data.ToString().Contains("DisplayImage"))
         {
+            target.GetComponent<Renderer>().enabled = true;
             Message message = data.FromJson<Message>();
             Debug.Log(message.data);
             SetTexture(textureList[message.data.ToString()]);
+        }
+        else if (data.ToString().Contains("BackgroundAudio"))
+        {
+            Message message = data.FromJson<Message>();
+            Debug.Log(message.data);
+            //SetAudio(textureList[message.data.ToString()]);
         }
         else // audio data or header
         {
