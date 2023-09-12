@@ -4,10 +4,11 @@
     "outputNetworkId": 97,
     "credentials": {
         "azureSpeech": {
-            "key": "8321a17878af46f4b80083ef7331c8cb",
+            "key": "02f7f819251845be80fab5930e3c86d9",
             "region": "uksouth"
         }
     },
+    "key":"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",
     "roomserver":
     {
         "tcp":

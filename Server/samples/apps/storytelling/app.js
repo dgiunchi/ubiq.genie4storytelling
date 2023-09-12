@@ -49,6 +49,7 @@ class TextureGeneration extends ApplicationController {
         this.currentItem = 0;
         
         this.storyprompt = "";
+        this.timeout = 7000; //give 7 seconds to load the images
     }
 
 
@@ -88,7 +89,7 @@ class TextureGeneration extends ApplicationController {
             var that = this;
             setTimeout(function() {
                 that.storyTell(identifier);    
-              }, 10000);
+              }, this.timeout);
 
             return;
         }
@@ -291,18 +292,20 @@ class TextureGeneration extends ApplicationController {
                 targetPeer: "Blue Hawk",
                 audioLength: data.length,
             });
+            
 
+            this.timeout = 1000 * response.length / (16000 * 2);//check the python
             while (response.length > 0) {
                 // console.log("Sending audio data to peers. Audio data length: " + this.audioData.length + " bytes");
                 this.scene.send(nconf.get("outputNetworkId"), response.slice(0, 16000));
                 response = response.slice(16000);
                 //console.log("Sent audio data to peers. Audio data length: " + response.length + " bytes");
             }
-
+            
             var that = this;
             setTimeout(function() {
                 that.storyTell(identifier);    
-              }, 10000);
+              }, this.timeout);
 
         });
     }

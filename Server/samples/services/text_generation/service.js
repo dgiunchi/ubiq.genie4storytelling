@@ -6,7 +6,7 @@ class TextGenerationService extends ServiceController {
 
         this.registerChildProcess("default", "python", [
             "-u",
-            "../../services/text_generation/openai_chatgpt.py",
+            "../../services/text_generation/openai_chatgpt_api.py",
             "--preprompt",
             config.preprompt,
             "--prompt_suffix",
