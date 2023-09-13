@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import azure.cognitiveservices.speech as speechsdk
+from azure.cognitiveservices.speech import PropertyId
 from azure.cognitiveservices.speech.audio import AudioStreamFormat, AudioConfig
 import argparse
 
@@ -17,6 +18,7 @@ def recognize_from_stdin():
         region=args.region,
     )
     speech_config.speech_recognition_language = "en-US"
+    speech_config.set_property(PropertyId.Speech_SegmentationSilenceTimeoutMs, "3000")
     audioFormat = AudioStreamFormat(16000, 16, 1)
     custom_push_stream = speechsdk.audio.PushAudioInputStream(stream_format=audioFormat)
     audio_config = AudioConfig(stream=custom_push_stream)
