@@ -23,7 +23,9 @@ class ImageGenerationService extends ServiceController {
                         "--output_folder",
                         "../../apps/storytelling/data",
                         "--prompt_postfix",
-                        ", 4k"
+                        ", 4k",
+                        "--lora_path",
+                        "../../services/image_generation/alltogether.safetensors"
                     ]);
                 }
             }.bind(this)

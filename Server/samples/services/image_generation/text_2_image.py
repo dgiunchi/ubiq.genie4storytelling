@@ -1,17 +1,21 @@
 import torch
 from PIL import Image
 from diffusers import StableDiffusionPipeline
+from diffusers import EulerDiscreteScheduler #sampler can be changed
+
 import hashlib
 import os
 import sys
 import json
 import argparse
 
+
 parser = argparse.ArgumentParser()
-parser.add_argument("--model", type=str, default="stabilityai/stable-diffusion-2")
+parser.add_argument("--model", type=str, default="runwayml/stable-diffusion-v1-5")
 parser.add_argument("--output_folder", type=str, default="./output")
 parser.add_argument("--prompt_postfix", type=str, default="")
-parser.add_argument("--seamless", type=bool, default=True)
+parser.add_argument("--lora_path", type=str, default="")
+parser.add_argument("--seamless", type=bool, default=False  )
 args = parser.parse_args()
 
 if args.seamless:
@@ -34,7 +38,6 @@ done = False
 
 
 def generateTextureFromPrompt(pipe, generator, message):
-    print ("Generating texture from prompt")
     global busy
     message = message.decode()
     if message != "" and busy == False:
@@ -45,9 +48,7 @@ def generateTextureFromPrompt(pipe, generator, message):
         file_name = message["output_file"] + ".png"
 
         prompt += args.prompt_postfix
-        image = pipe(
-            prompt, guidance_scale=7, num_inference_steps=32, generator=generator
-        ).images[0]
+        image = pipe(prompt, guidance_scale=7, num_inference_steps=28, generator=generator).images[0]
         fullpath = os.path.join(args.output_folder, file_name)
         image.save(fullpath)
         print(file_name)
@@ -58,6 +59,7 @@ def recognize_from_stdin():
     global pipe, generator, done, busy
 
     if pipe == None:
+        """
         print(
             "Initializing texture generation model "
             + args.model
@@ -65,12 +67,18 @@ def recognize_from_stdin():
             + args.output_folder
             + "."
         )
-        pipe = StableDiffusionPipeline.from_pretrained(
-            args.model, revision="fp16", torch_dtype=torch.float16
-        )
+        {"prompt":"young girl eating {emma:1} an apple", "output_file": "test.png"}
+        """
+            
+        pipe = StableDiffusionPipeline.from_pretrained( args.model, revision="fp16", torch_dtype=torch.float16)
+        #pipe = StableDiffusionPipeline.from_ckpt("https://huggingface.co/runwayml/stable-diffusion-v1-5/blob/main/v1-5-pruned-emaonly.safetensors", torch_dtype=torch.float16, use_safetensors=True)
         pipe.to("cuda")
+        
+        if(args.lora_path != ""):
+            pipe.load_lora_weights(args.lora_path)
+            pipe.scheduler = EulerDiscreteScheduler.from_config(pipe.scheduler.config)
         generator = torch.Generator("cuda").manual_seed(1024)
-
+        
     # Write stdin to the stream
     while not done:
         try:
