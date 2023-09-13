@@ -158,6 +158,15 @@ class TextureGeneration extends ApplicationController {
                 //response = ">create a story more than 300 words and less than 350 words long about a cat in a chocolate castle. Remember to put a conclusion and don't be too long, and put a @END@. For each sentence of the story, include, in square brackets. This description must be unique and written as if it were to be fed to a diffusion model for image generation. Do not put proper names inside the square brackets.";
                 response = ">create a story more than 300 words and less than 350 words long about " + this.storyprompt + ". Remember to put a conclusion and don't be too long. For each sentence of the story, include always, in square brackets, a different description of a picture representing that sentence. Such description must be written  as if it were to be fed to a diffusion model for image generation. Do not put proper names inside the square brackets.";
                 this.iteration_count += 1;
+                
+                var filename = "data/input.txt";
+                fs.writeFile(filename, response, (err) => {
+                    if (err) {
+                      console.error(err);
+                    } else {
+                      console.log(`File ${filename} written successfully.`);
+                    }
+                  });
 
             } else response = "";
             
