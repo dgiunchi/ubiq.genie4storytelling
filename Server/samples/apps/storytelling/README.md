@@ -1,6 +1,6 @@
-# Voice-based Texture Generation Sample
+# Storytelling Sample
 
-This guide demonstrates how to use the Ubiq-Genie framework to create an application that generates textures based on voice commands. Users also have the option to specify target objects using ray-based selection.
+This guide demonstrates how to use the Ubiq-Genie framework to create an application that generates an immersive storytelling within Ubiq environment.
 
 ## Prerequisites
 
@@ -14,7 +14,7 @@ Before proceeding, ensure the Ubiq-Genie framework and the necessary dependencie
 
 Follow these steps to run the sample:
 
-1. Open a terminal and navigate to the `Server/samples/apps/texture_generation` directory.
+1. Open a terminal and navigate to the `Server/samples/apps/storytelling` directory.
 2. Update the `key` and `serviceRegion` variables in `config.json` to match your Azure Speech Services subscription key and region.
 3. Execute the following command:
 
@@ -22,7 +22,7 @@ Follow these steps to run the sample:
     node app.js
     ```
 
-4. Launch Unity and navigate to the `Unity/Assets/Samples/Ubiq-Genie/TextureGeneration` directory. Open the `TextureGeneration.unity` scene.
+4. Launch Unity and navigate to the `Unity/Assets/Samples/Ubiq-Genie/StoryTelling3D` directory. Open the `StoryTelling3D.unity` scene.
 5. Ensure the `Room Client` under the `Network Scene` object has the correct IP address and port for the server. If the server is running on the same machine as the Unity Editor, the IP address should be `localhost`.
 6. In the Unity Editor, press the `Play` button to launch the application.
 7. Press and hold the space bar on desktop or use the grip button in VR to record a voice command, releasing it to stop the recording.
@@ -30,10 +30,7 @@ Follow these steps to run the sample:
 
     - _In VR, the trigger button can be used for ray-based selection of the target object. In this case, use 'this' or 'that' to refer to the selected object. For example, "make this look like a leather texture"._
 
-## Demonstration Video
-
-For a demonstration video of this sample, please refer to the [Ubiq-Genie demo video](https://youtu.be/cGz0z9BIgQk).
 
 ## Support
 
-For any questions or issues, please use the Discussions tab on Github or send an email to [Nels Numan](mailto:nels.numan@ucl.ac.uk).
+For any questions or issues, please use the Discussions tab on Github or send an email to [Daniele Giunchi](mailto:d.giunchi@ucl.ac.uk).
