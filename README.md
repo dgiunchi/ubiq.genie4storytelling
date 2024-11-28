@@ -1,8 +1,9 @@
-# Welcome to Ubiq-Genie
+# AISop Storytelling
 
-![Illustrations of two sample demos available in Ubiq-Genie](header.png)
-
-Ubiq-Genie is a framework that enables you to build server-assisted collaborative mixed reality applications with Unity using the [Ubiq](https://ubiq.online) framework.
+![Illustrations of AIsop Pipeline for Storytelling in Ubiq-Genie](AISOP.png)
+AIsop is a system that autonomously generates VR storytelling experiences using generative artificial intelligence (AI).
+AIsop crafts unique stories by leveraging state-of-the-art Large Language Models (LLMs) and employs Text-To-Speech (TTS) technology for narration.
+Aisop is based on Ubiq-Genie is a framework that enables you to build server-assisted collaborative mixed reality applications with Unity using the [Ubiq](https://ubiq.online) framework.
 
 ## Features
 
