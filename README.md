@@ -40,7 +40,14 @@ git clone git@github.com:UCL-VR/ubiq-genie.git Ubiq-Genie
 ## Documentation
 For more information on how to use Ubiq-Genie, please refer to the README file in the `Genie` folder.
 
-## Samples
+## Storytelling Sample
+
+The `Server/samples` folder contains the sample for storytelling
+
+- [**Storytelling**](Server/samples/apps/storytelling/README.md): generates a storytelling experience within the camp-fire scene in Unity.
+
+
+## Samples from Ubiq Genie
 
 The `Genie/samples` folder contains a number of samples that demonstrate how to use Ubiq-Genie. For more information on how to use these samples, please refer to the README files in the corresponding folders. Currently, the following collaborative samples are available:
 
