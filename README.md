@@ -1,4 +1,4 @@
-# AISop Storytelling
+# AIsop Storytelling
 
 ![Illustrations of AIsop Pipeline for Storytelling in Ubiq-Genie](AISOP.png)
 AIsop is a system that autonomously generates VR storytelling experiences using generative artificial intelligence (AI).
